@@ -1,7 +1,7 @@
-import Contact from "../models/contacts.js";
+import { Contact } from "../models/contactModel.js";
 
-export const getAllContacts = async () => {
-  return await Contact.find();
+export const getAllContacts = async (filter, skip, limit) => {
+  return await Contact.find(filter).skip(skip).limit(limit);
 };
 
 export const getContactById = async (id) => {
@@ -9,9 +9,11 @@ export const getContactById = async (id) => {
 };
 
 export const createContact = async (data) => {
+  if (!data.owner) {
+    throw new Error("Owner is required");
+  }
   return await Contact.create(data);
 };
-
 export const updateContact = async (id, data) => {
   return await Contact.findByIdAndUpdate(id, data, {
     new: true,

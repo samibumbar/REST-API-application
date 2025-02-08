@@ -1,7 +1,10 @@
 import express from "express";
 import * as contactsController from "../controllers/contactsController.js";
+import { authMiddleware } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
+
+router.use(authMiddleware);
 
 router.get("/", contactsController.getAllContacts);
 router.get("/:contactId", contactsController.getContactById);
