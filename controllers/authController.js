@@ -1,6 +1,8 @@
+import { User } from "../models/userModel.js";
+
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { User } from "../models/userModel.js";
+import gravatar from "gravatar";
 
 export const signup = async (req, res) => {
   const { email, password } = req.body;
@@ -11,9 +13,18 @@ export const signup = async (req, res) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
-  const user = await User.create({ email, password: hashedPassword });
+  const avatarURL = gravatar.url(email, { s: "250", d: "retro" }, true);
+  const user = await User.create({
+    email,
+    password: hashedPassword,
+    avatarURL,
+  });
 
-  res.status(201).json({ email: user.email, subscription: user.subscription });
+  res.status(201).json({
+    email: user.email,
+    subscription: user.subscription,
+    avatarURL: user.avatarURL,
+  });
 };
 
 export const login = async (req, res) => {
