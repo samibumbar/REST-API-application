@@ -1,8 +1,7 @@
-import fs from "fs/promises";
+import fs from "fs";
 import path from "path";
-import * as Jimp from "jimp";
+import Jimp from "jimp";
 import { fileURLToPath } from "url";
-
 import { User } from "../models/userModel.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -22,7 +21,7 @@ export const updateAvatar = async (req, res) => {
   try {
     const image = await Jimp.read(tempPath);
     await image.resize(250, 250).writeAsync(resultPath);
-    await fs.unlink(tempPath);
+    fs.unlinkSync(tempPath);
 
     const avatarURL = `/avatars/${newFileName}`;
     req.user.avatarURL = avatarURL;
@@ -30,7 +29,10 @@ export const updateAvatar = async (req, res) => {
 
     res.json({ avatarURL });
   } catch (error) {
-    await fs.unlink(tempPath);
+    console.error("Error processing image:", error);
+    if (fs.existsSync(tempPath)) {
+      fs.unlinkSync(tempPath);
+    }
     res.status(500).json({ message: "Error processing image" });
   }
 };
